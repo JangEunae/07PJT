@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="PurchaseMapper">
+ 	
+ 	
+	<resultMap id="purchaseSelectMap" type="purchase">
+		<result property="tranNo" 				column="tran_no" 			jdbcType="NUMERIC"/>
+		<result property="purchaseProd.prodNo"	column="prod_no" 			jdbcType="NUMERIC" />
+		<result property="buyer.userId" 		column="buyer_id" 			jdbcType="VARCHAR" />
+		<result property="paymentOption" 		column="payment_option" 	jdbcType="CHAR" />
+		<result property="receiverName" 		column="receiver_name" 		jdbcType="VARCHAR" />
+		<result property="receiverPhone" 		column="receiver_phone" 	jdbcType="VARCHAR" />
+		<result property="divyAddr" 			column="demailaddr" 		jdbcType="VARCHAR" />
+		<result property="divyRequest" 			column="dlvy_request" 		jdbcType="VARCHAR" />
+		<result property="tranCode" 			column="tran_status_code" 	jdbcType="CHAR" />
+		<result property="orderDate" 			column="order_data" 		jdbcType="DATE" />
+		<result property="divyDate" 			column="dlvy_date" 			jdbcType="DATE" />
+	</resultMap>
+	
+	<!-- SQL : INSERT -->
+	<insert 	id="addPurchase"		parameterType="purchase" >
+	 	insert into TRANSACTION values (seq_transaction_tran_no.nextval, #{purchaseProd.prodNo}, #{buyer.userId},
+	 								#{paymentOption:CHAR}, #{receiverName:VARCHAR}, #{receiverPhone:VARCHAR}, #{divyAddr:VARCHAR},
+	 								#{divyRequest:VARCHAR}, #{tranCode:CHAR}, sysdate, #{divyDate:DATE})
+	 </insert>
+	 
+	 <!-- SQL : SELECT ONE -->
+	 <select 	id="getPurchase01"	parameterType="string"	resultMap="purchaseSelectMap">
+		select * from TRANSACTION t, USERS u where TRAN_NO = #{tranNo} and t.BUYER_ID = u.USER_ID
+	 </select>
+	 
+	 <select 	id="getPurchase02"	parameterType="string"	resultMap="purchaseSelectMap">
+		select * from TRANSACTION t, USERS u where PROD_NO = #{value} and t.BUYER_ID = u.USER_ID
+	 </select>
+	 
+	 <!-- SQL : UPDATE -->
+	 <update	id="updateTranCode"	parameterType="purchase" >
+	   	UPDATE TRANSACTION
+	   	<set>
+	   		<if test="tranCode== '0  '">
+	   			TRAN_STATUS_CODE = '1'
+	   		</if>
+	   		<if test="tranCode== '1  '">
+	   			TRAN_STATUS_CODE = '2'
+	   		</if>
+	   		<if test="tranCode== '2  '">
+	   			TRAN_STATUS_CODE = '3  '
+	   		</if>
+	   	</set>
+	   	WHERE TRAN_NO = #{tranNo}
+	 </update>
+	 
+	  <update	id="updatePurchase"	parameterType="purchase" >
+	   	UPDATE TRANSACTION
+	   	<set>
+	   		PAYMENT_OPTION 		= #{paymentOption:CHAR} ,
+			RECEIVER_NAME		= #{receiverName:VARCHAR},
+			RECEIVER_PHONE		= #{receiverPhone:VARCHAR} ,
+			DEMAILADDR			= #{divyAddr:VARCHAR},
+			DLVY_REQUEST		= #{divyRequest:VARCHAR},
+			DLVY_DATE			= #{divyDate:DATE}
+	   	</set>
+	   	WHERE TRAN_NO = #{tranNo}
+	 </update>
+	
+	<delete id="deleteTranCode">
+	
+		delete TRANSACTION where TRAN_NO = #{tranNo}
+	
+	</delete>
+		 
+	<!-- SQL : SELECT LIST -->
+	<select  id="getPurchaseList"  parameterType="map"	resultMap="purchaseSelectMap">
+	  	SELECT *
+	  	FROM (	SELECT inner_table.* , ROWNUM AS row_seq
+	  					FROM		(	select * from TRANSACTION t, USERS u  where BUYER_ID= #{buyerId}
+	  									and t.BUYER_ID = u.USER_ID ORDER BY ORDER_DATA DESC
+											 ) inner_table
+						WHERE ROWNUM <![CDATA[<=]]> #{search.currentPage}*#{search.pageSize} )
+  		WHERE row_seq BETWEEN (#{search.currentPage}-1)*#{search.pageSize}+1
+  		AND #{search.currentPage}*#{search.pageSize}
+	 </select>
+	 	<!--  위 두번째 subQuery 의  
+	 			WHERE ROWNUM &lt;= #{endRowNum} ) 는
+	 			WHERE ROWNUM <= #{endRowNum} ) 의미이며..
+	 			< 는 keyword 로 &lt; 를	사용.
+	 			
+	 			<![CDATA[  ~~~  ]]> 를 이용하여 아래와 같이 사용  할 수 있다.
+	 			CDATA ==> Character Data 의 의미 Java 에서 \n 같은 특수문자 처리  
+
+				WHERE ROWNUM <![CDATA[ <=]]> #{endRowNum} )
+		-->
+	
+	<!-- SQL : SELECT ROW Count -->	 
+	 <select  id="getTotalCount"  parameterType="string"	 resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM(select * from TRANSACTION t, USERS u  where BUYER_ID=#{buyer.userId}
+	  									and t.BUYER_ID = u.USER_ID ) countTable						
+	 </select>
+	 
+</mapper>

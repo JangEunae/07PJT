@@ -94,10 +94,10 @@ public class PurchaseController {
 		return "forward:/purchase/addPurchase.jsp";
 	}
 	
-	@RequestMapping(value="getPurchase", method=RequestMethod.GET)
+	@RequestMapping(value="getPurchase")
 	public String getPurchase( @ModelAttribute("purchase") Purchase purchaseVO, @RequestParam("tranNo") String tranNo , Model model ) throws Exception {
 		
-		System.out.println("/purchase/getPurchase : GET");
+		System.out.println("/purchase/getPurchase : GET / POST");
 		//Business Logic
 		purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
 		// Model °ú View ¿¬°á
@@ -128,7 +128,7 @@ public class PurchaseController {
 		purchaseService.updatePurchase(purchase);
 		model.addAttribute("purchaseVO", purchase);
 
-		return "forward:/getPurchase.do?";
+		return "forward:/purchase/getPurchase";
 	}
 	
 	@RequestMapping(value="listPurchase")
@@ -155,10 +155,10 @@ public class PurchaseController {
 		return "forward:/purchase/listPurchase.jsp";
 	}
 	
-	@RequestMapping("/deletePurchase.do")
+	@RequestMapping(value="deletePurchase", method=RequestMethod.GET )
 	public String deletePurchase( @RequestParam("tranNo") String tranNo, Model model ) throws Exception{
 
-		System.out.println("/deletePurchase.do");
+		System.out.println("/purchase/deletePurchase : GET");
 		
 		//Business Logic
 		Purchase purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
@@ -166,31 +166,31 @@ public class PurchaseController {
 		
 		model.addAttribute("purchaseVO", purchaseVO);
 
-		return "forward:/listPurchase.do";
+		return "forward:/purchase/listPurchase";
 	}
 	
-	@RequestMapping("/updateTranCode.do")
+	@RequestMapping(value="updateTranCode",  method=RequestMethod.GET)
 	public String updateTranCodeAction( @RequestParam("tranNo") String tranNo,Model model ) throws Exception{
 
-		System.out.println("/updateTranCode.do");
+		System.out.println("/purchase/updateTranCode : GET");
 		
 		//Business Logic
 		Purchase purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
 		purchaseService.updateTranCode(purchaseVO);
 		//model.addAttribute("purchaseVO", purchaseVO);
 
-		return "forward:/listPurchase.do";
+		return "forward:/purchase/listPurchase";
 	}
 	
-	@RequestMapping("/updateTranCodeByProd.do")
+	@RequestMapping(value="updateTranCodeByProd", method=RequestMethod.GET)
 	public String updateTranCodeByProdAction( @RequestParam("prodNo") String prodNo) throws Exception{
 
-		System.out.println("/updateTranCodeByProd.do");
+		System.out.println("/purchase/updateTranCodeByProd");
 		
 		//Business Logic
 		Purchase purchaseVO = purchaseService.getPurchase2(Integer.parseInt(prodNo));
 		purchaseService.updateTranCode(purchaseVO);
 		
-		return "forward:/listProduct.do?menu=manage";
+		return "forward:/product/listProduct?menu=manage";
 	}
 }

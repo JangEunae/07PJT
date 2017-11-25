@@ -69,10 +69,10 @@ public class ProductController {
 		return "forward:/product/addProduct.jsp";
 	}
 	
-	@RequestMapping(value="getProduct", method=RequestMethod.GET)
+	@RequestMapping(value="getProduct")
 	public String getProduct( @RequestParam("prodNo") String prodNo , Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception {
 		
-		System.out.println("/product/getProduct : GET");
+		System.out.println("/product/getProduct : GET / POST");
 		//Business Logic
 		Product product = productService.getProduct(Integer.parseInt(prodNo));
 		// Model °ú View ¿¬°á
@@ -127,7 +127,7 @@ public class ProductController {
 		
 		model.addAttribute("productVO", product);
 
-		return "forward:/getProduct.do?menu=manage";
+		return "forward:/product/getProduct?menu=manage";
 	}
 	
 	@RequestMapping(value="listProduct")

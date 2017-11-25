@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.model2.mvc.common.Page;
@@ -32,6 +33,7 @@ import com.model2.mvc.service.user.impl.UserServiceImpl;
 
 //==> 회원관리 Controller
 @Controller
+@RequestMapping("/purchase/*")
 public class PurchaseController {
 	
 	///Field
@@ -64,10 +66,10 @@ public class PurchaseController {
 	int pageSize;
 	
 	
-	@RequestMapping("/addPurchaseView.do")
-	public String addPurchaseView(@RequestParam("prodNo") String prodNo, @RequestParam("userId") String userId, Model model) throws Exception {
+	@RequestMapping(value="addPurchase", method=RequestMethod.GET)
+	public String addPurchase(@RequestParam("prodNo") String prodNo, @RequestParam("userId") String userId, Model model) throws Exception {
 
-		System.out.println("/addPurchaseView.do");
+		System.out.println("/purchase/addPurchase : GET");
 		
 		Product productVO = productService.getProduct(Integer.parseInt(prodNo));
 		User userVO = userService.getUser(userId);
@@ -78,10 +80,10 @@ public class PurchaseController {
 		return "forward:/purchase/addPurchaseView.jsp";
 	}
 	
-	@RequestMapping("/addPurchase.do")
+	@RequestMapping(value="addPurchase", method=RequestMethod.POST)
 	public String addProduct( @ModelAttribute("purchase") Purchase purchaseVO , @RequestParam("userId") String userId ,@RequestParam("prodNo") String prodNo , Model model ) throws Exception {
 
-		System.out.println("/addPurchase.do");
+		System.out.println("/purchase/addPurchase : POST");
 		//Business Logic
 		purchaseVO.setBuyer(userService.getUser(userId));
 		purchaseVO.setPurchaseProd(productService.getProduct(Integer.parseInt(prodNo)));
@@ -92,10 +94,10 @@ public class PurchaseController {
 		return "forward:/purchase/addPurchase.jsp";
 	}
 	
-	@RequestMapping("/getPurchase.do")
+	@RequestMapping(value="getPurchase", method=RequestMethod.GET)
 	public String getPurchase( @ModelAttribute("purchase") Purchase purchaseVO, @RequestParam("tranNo") String tranNo , Model model ) throws Exception {
 		
-		System.out.println("/getPurchase.do");
+		System.out.println("/purchase/getPurchase : GET");
 		//Business Logic
 		purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
 		// Model 과 View 연결
@@ -105,36 +107,34 @@ public class PurchaseController {
 		return "forward:/purchase/getPurchase.jsp";
 	}
 	
-	@RequestMapping("/updatePurchaseView.do")
-	public String updatePurchaseView( @RequestParam("tranNo") String tranNo , Model model ) throws Exception{
+	@RequestMapping(value="updatePurchase", method=RequestMethod.GET)
+	public String updatePurchase( @RequestParam("tranNo") String tranNo , Model model ) throws Exception{
 
-		System.out.println("/updatePurchaseView.do");
+		System.out.println("/purchase/updatePurchase : GET");
 		//Business Logic
 		Purchase purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
-		
+	
 		model.addAttribute("purchaseVO", purchaseVO);
 		
 		return "forward:/purchase/updatePurchaseView.jsp";
 	}
 	
-	@RequestMapping("/updatePurchase.do")
+	@RequestMapping(value="updatePurchase", method=RequestMethod.POST)
 	public String updatePurchase( @ModelAttribute("purchase") Purchase purchase, Model model ) throws Exception{
 
-		System.out.println("/updatePurchase.do");
-		System.out.println("이전"+purchase);
+		System.out.println("/purchase/updatePurchase : POST");
 		//Business Logic
 		//purchase.setTranNo(Integer.parseInt("tranNo"));
 		purchaseService.updatePurchase(purchase);
-		System.out.println("어디가?"+purchase);
 		model.addAttribute("purchaseVO", purchase);
 
 		return "forward:/getPurchase.do?";
 	}
 	
-	@RequestMapping("/listPurchase.do")
+	@RequestMapping(value="listPurchase")
 	public String listPurchase( @ModelAttribute("search") Search search,  Model model , HttpSession session) throws Exception{
 		
-		System.out.println("/listPurchase.do");
+		System.out.println("/purchase/listPurchase : GET / POST");
 		if(search.getCurrentPage() ==0 ){
 			search.setCurrentPage(1);
 		}

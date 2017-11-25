@@ -46,7 +46,7 @@ function fncGetList(currentPage) {
 
 <div style="width:98%; margin-left:10px;">
 
-<form name="detailForm" action="/listProduct.do?menu=${param.menu}&searchOption=${search.searchOption}" method="post" >
+<form name="detailForm" action="/product/listProduct?menu=${param.menu}&searchOption=${search.searchOption}" method="post" >
 
 <table width="100%" height="37" border="0" cellpadding="0"	cellspacing="0">
 	<tr>
@@ -181,8 +181,8 @@ function fncGetList(currentPage) {
 		<td colspan="8" align="right">
 
 		<!--  <input type="hidden" name="searchOption" id="searchOption" >-->
-		<a href="/listProduct.do?menu=${param.menu}&searchOption=0&searchCondition=${search.searchCondition}&searchKeyword=${search.searchKeyword}">높은 가격순▲ </a>
-		<a href="/listProduct.do?menu=${param.menu}&searchOption=1&searchCondition=${search.searchCondition}&searchKeyword=${search.searchKeyword}">낮은 가격순▼ </a>
+		<a href="/product/listProduct?menu=${param.menu}&searchOption=0&searchCondition=${search.searchCondition}&searchKeyword=${search.searchKeyword}">높은 가격순▲ </a>
+		<a href="/product/listProduct?menu=${param.menu}&searchOption=1&searchCondition=${search.searchCondition}&searchKeyword=${search.searchKeyword}">낮은 가격순▼ </a>
 		</td>
 	</tr>
 	<tr>
@@ -230,11 +230,11 @@ function fncGetList(currentPage) {
 			<td align="center">${ i }</td>
 			<td></td>
 				<c:if test = "${param.menu=='manage'}">					
-				<td align="left"><a href="/updateProductView.do?prodNo=${product.prodNo}&menu=${param.menu}">${product.prodName}</a></td>		
+				<td align="left"><a href="/product/updateProduct?prodNo=${product.prodNo}&menu=${param.menu}">${product.prodName}</a></td>		
 				</c:if>
 				<c:if test = "${param.menu=='search'}">
 					<c:if test = "${product.proTranCode==null}">
-				<td align="left"><a href="/getProduct.do?prodNo=${product.prodNo}&menu=${param.menu}">${product.prodName}</a></td>
+				<td align="left"><a href="/product/getProduct?prodNo=${product.prodNo}&menu=${param.menu}">${product.prodName}</a></td>
 				</c:if>
 				<c:if test = "${product.proTranCode=='0  '||product.proTranCode=='1  '||product.proTranCode=='2  '}">
 				<td align="left">${product.prodName}</td>
@@ -250,7 +250,7 @@ function fncGetList(currentPage) {
 			<c:if test = "${product.proTranCode=='0  '}">
 				<c:if test = "${param.menu=='manage'}">
 				구매완료
-					<a href="/updateTranCodeByProd.do?prodNo=${product.prodNo}&proTranCode=${product.proTranCode}">배송하기</a>
+					<a href="/purchase/updateTranCodeByProd?prodNo=${product.prodNo}&proTranCode=${product.proTranCode}">배송하기</a>
 				</c:if>	
 				<c:if test = "${param.menu=='search'}">
 				재고없음
@@ -259,7 +259,7 @@ function fncGetList(currentPage) {
 			<c:if test = "${product.proTranCode=='1  '}">
 				배송중
 				<c:if test = "${param.menu=='manage'}">
-					<a href="/updateTranCodeByProd.do?prodNo=${product.prodNo}&proTranCode=${product.proTranCode}">배송완료</a>
+					<a href="/purchase/updateTranCodeByProd?prodNo=${product.prodNo}&proTranCode=${product.proTranCode}">배송완료</a>
 				</c:if>
 			</c:if>
 			<c:if test = "${product.proTranCode=='2  '}">

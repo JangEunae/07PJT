@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.model2.mvc.common.Page;
@@ -27,6 +28,7 @@ import com.model2.mvc.service.purchase.impl.PurchaseServiceImpl;
 
 //==> 회원관리 Controller
 @Controller
+@RequestMapping("/product/*")
 public class ProductController {
 	
 	///Field
@@ -55,10 +57,10 @@ public class ProductController {
 	int pageSize;
 	
 	
-	@RequestMapping("/addProduct.do")
+	@RequestMapping(value="addProduct", method=RequestMethod.POST )
 	public String addProduct( @ModelAttribute("product") Product product , Model model ) throws Exception {
 
-		System.out.println("/addProduct.do");
+		System.out.println("/product/addProduct : POST");
 		//Business Logic
 		productService.addProduct(product);
 		
@@ -67,10 +69,10 @@ public class ProductController {
 		return "forward:/product/addProduct.jsp";
 	}
 	
-	@RequestMapping("/getProduct.do")
+	@RequestMapping(value="getProduct", method=RequestMethod.GET)
 	public String getProduct( @RequestParam("prodNo") String prodNo , Model model, HttpServletRequest request, HttpServletResponse response ) throws Exception {
 		
-		System.out.println("/getProduct.do");
+		System.out.println("/product/getProduct : GET");
 		//Business Logic
 		Product product = productService.getProduct(Integer.parseInt(prodNo));
 		// Model 과 View 연결
@@ -100,10 +102,10 @@ public class ProductController {
 		return "forward:/product/getProduct.jsp";
 	}
 	
-	@RequestMapping("/updateProductView.do")
-	public String updateProductView( @RequestParam("prodNo") String prodNo , Model model ) throws Exception{
+	@RequestMapping(value="updateProduct", method=RequestMethod.GET)
+	public String updateProduct( @RequestParam("prodNo") String prodNo , Model model ) throws Exception{
 
-		System.out.println("/updateProductView.do");
+		System.out.println("/product/updateProduct : GET");
 		//Business Logic
 		Product productVO = productService.getProduct(Integer.parseInt(prodNo));
 		
@@ -115,10 +117,10 @@ public class ProductController {
 		return "forward:/product/updateProductView.jsp";
 	}
 	
-	@RequestMapping("/updateProduct.do")
+	@RequestMapping(value="updateProduct", method=RequestMethod.POST)
 	public String updateProduct( @ModelAttribute("product") Product product, Model model ) throws Exception{
 
-		System.out.println("/updateProduct.do");
+		System.out.println("/product/updateProduct : POST");
 		
 		//Business Logic
 		productService.updateProduct(product);
@@ -128,10 +130,10 @@ public class ProductController {
 		return "forward:/getProduct.do?menu=manage";
 	}
 	
-	@RequestMapping("/listProduct.do")
+	@RequestMapping(value="listProduct")
 	public String listProduct( @ModelAttribute("search") Search search, Model model , HttpServletRequest request) throws Exception{
 		
-		System.out.println("/listProduct.do");
+		System.out.println("/product/listProduct : GET / POST");
 		if(search.getCurrentPage() ==0 ){
 			search.setCurrentPage(1);
 		}

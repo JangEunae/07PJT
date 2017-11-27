@@ -71,7 +71,7 @@ public class ProductController {
 		//Business Logic
 		
 		if(FileUpload.isMultipartContent(request)) {
-			String temDir = "C:\\Users\\¿Â¿∫æ÷\\git\\07PJT\\07.Model2MVCShop(URI,pattern)\\WebContent\\images\\uploadFiles\\";
+			String temDir = "C:\\Users\\bitcamp\\git\\07PJT01\\07.Model2MVCShop(URI,pattern)\\WebContent\\images\\uploadFiles\\";
 		
 		DiskFileUpload fileUpload = new DiskFileUpload();
 		fileUpload.setRepositoryPath(temDir);

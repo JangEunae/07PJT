@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.model2.mvc.common.Page;
 import com.model2.mvc.common.Search;
@@ -67,72 +68,78 @@ public class PurchaseController {
 	
 	
 	@RequestMapping(value="addPurchase", method=RequestMethod.GET)
-	public String addPurchase(@RequestParam("prodNo") String prodNo, @RequestParam("userId") String userId, Model model) throws Exception {
+	public ModelAndView addPurchase(@RequestParam("prodNo") String prodNo, @RequestParam("userId") String userId) throws Exception {
 
 		System.out.println("/purchase/addPurchase : GET");
 		
 		Product productVO = productService.getProduct(Integer.parseInt(prodNo));
 		User userVO = userService.getUser(userId);
 		
-		model.addAttribute("userVO",userVO);
-		model.addAttribute("productVO", productVO);
+		String viewName = "forward:/purchase/addPurchaseView.jsp";
 		
-		return "forward:/purchase/addPurchaseView.jsp";
+		ModelAndView modelAndView = new ModelAndView();
+		
+		modelAndView.setViewName(viewName);
+		modelAndView.addObject("userVO",userVO);
+		modelAndView.addObject("productVO", productVO);
+		//model.addAttribute("userVO",userVO);
+		//model.addAttribute("productVO", productVO);
+		
+		return modelAndView;
 	}
 	
 	@RequestMapping(value="addPurchase", method=RequestMethod.POST)
-	public String addProduct( @ModelAttribute("purchase") Purchase purchaseVO , @RequestParam("userId") String userId ,@RequestParam("prodNo") String prodNo , Model model ) throws Exception {
+	public ModelAndView addProduct( @ModelAttribute("purchase") Purchase purchaseVO , @RequestParam("userId") String userId ,@RequestParam("prodNo") String prodNo ) throws Exception {
 
 		System.out.println("/purchase/addPurchase : POST");
 		//Business Logic
 		purchaseVO.setBuyer(userService.getUser(userId));
 		purchaseVO.setPurchaseProd(productService.getProduct(Integer.parseInt(prodNo)));
 		purchaseService.addPurchase(purchaseVO);
-		System.out.println("앱"+purchaseVO);
-		model.addAttribute("purchaseVO", purchaseVO);
 		
-		return "forward:/purchase/addPurchase.jsp";
+		//model.addAttribute("purchaseVO", purchaseVO);
+		
+		return new ModelAndView("forward:/purchase/addPurchase.jsp", "purchaseVO", purchaseVO);
 	}
 	
 	@RequestMapping(value="getPurchase")
-	public String getPurchase( @ModelAttribute("purchase") Purchase purchaseVO, @RequestParam("tranNo") String tranNo , Model model ) throws Exception {
+	public ModelAndView getPurchase( @ModelAttribute("purchase") Purchase purchaseVO, @RequestParam("tranNo") String tranNo  ) throws Exception {
 		
 		System.out.println("/purchase/getPurchase : GET / POST");
 		//Business Logic
 		purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
 		// Model 과 View 연결
-		System.out.println("dhd"+purchaseVO);
-		model.addAttribute("purchaseVO", purchaseVO);
+		//model.addAttribute("purchaseVO", purchaseVO);
 		
-		return "forward:/purchase/getPurchase.jsp";
+		return new ModelAndView("forward:/purchase/getPurchase.jsp", "purchaseVO", purchaseVO);
 	}
 	
 	@RequestMapping(value="updatePurchase", method=RequestMethod.GET)
-	public String updatePurchase( @RequestParam("tranNo") String tranNo , Model model ) throws Exception{
+	public ModelAndView updatePurchase( @RequestParam("tranNo") String tranNo ) throws Exception{
 
 		System.out.println("/purchase/updatePurchase : GET");
 		//Business Logic
 		Purchase purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
 	
-		model.addAttribute("purchaseVO", purchaseVO);
+		//model.addAttribute("purchaseVO", purchaseVO);
 		
-		return "forward:/purchase/updatePurchaseView.jsp";
+		return  new ModelAndView("forward:/purchase/updatePurchaseView.jsp", "purchaseVO", purchaseVO);
 	}
 	
 	@RequestMapping(value="updatePurchase", method=RequestMethod.POST)
-	public String updatePurchase( @ModelAttribute("purchase") Purchase purchase, Model model ) throws Exception{
+	public ModelAndView updatePurchase( @ModelAttribute("purchase") Purchase purchase ) throws Exception{
 
 		System.out.println("/purchase/updatePurchase : POST");
 		//Business Logic
 		//purchase.setTranNo(Integer.parseInt("tranNo"));
 		purchaseService.updatePurchase(purchase);
-		model.addAttribute("purchaseVO", purchase);
+		//model.addAttribute("purchaseVO", purchase);
 
-		return "forward:/purchase/getPurchase";
+		return  new ModelAndView("forward:/purchase/getPurchase", "purchaseVO", purchase);
 	}
 	
 	@RequestMapping(value="listPurchase")
-	public String listPurchase( @ModelAttribute("search") Search search,  Model model , HttpSession session) throws Exception{
+	public ModelAndView listPurchase( @ModelAttribute("search") Search search, HttpSession session) throws Exception{
 		
 		System.out.println("/purchase/listPurchase : GET / POST");
 		if(search.getCurrentPage() ==0 ){
@@ -147,16 +154,24 @@ public class PurchaseController {
 		Page resultPage = new Page( search.getCurrentPage(), ((Integer)map.get("totalCount")).intValue(), pageUnit, pageSize);
 		System.out.println(resultPage);
 		
-		// Model 과 View 연결
-		model.addAttribute("list", map.get("list"));
-		model.addAttribute("resultPage", resultPage);
-		model.addAttribute("search", search);
+		String viewName = "forward:/purchase/listPurchase.jsp";
 		
-		return "forward:/purchase/listPurchase.jsp";
+		ModelAndView modelAndView = new ModelAndView();
+		
+		modelAndView.setViewName(viewName);
+		modelAndView.addObject("list", map.get("list"));
+		modelAndView.addObject("resultPage", resultPage);
+		modelAndView.addObject("search", search);
+		// Model 과 View 연결
+		//model.addAttribute("list", map.get("list"));
+		//model.addAttribute("resultPage", resultPage);
+		//model.addAttribute("search", search);
+		
+		return modelAndView;
 	}
 	
 	@RequestMapping(value="deletePurchase", method=RequestMethod.GET )
-	public String deletePurchase( @RequestParam("tranNo") String tranNo, Model model ) throws Exception{
+	public ModelAndView deletePurchase( @RequestParam("tranNo") String tranNo ) throws Exception{
 
 		System.out.println("/purchase/deletePurchase : GET");
 		
@@ -164,13 +179,13 @@ public class PurchaseController {
 		Purchase purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
 		purchaseService.deleteTranCode(purchaseVO);
 		
-		model.addAttribute("purchaseVO", purchaseVO);
+		//model.addAttribute("purchaseVO", purchaseVO);
 
-		return "forward:/purchase/listPurchase";
+		return new ModelAndView("forward:/purchase/listPurchase", "purchaseVO", purchaseVO);
 	}
 	
 	@RequestMapping(value="updateTranCode",  method=RequestMethod.GET)
-	public String updateTranCodeAction( @RequestParam("tranNo") String tranNo,Model model ) throws Exception{
+	public ModelAndView updateTranCodeAction( @RequestParam("tranNo") String tranNo,Model model ) throws Exception{
 
 		System.out.println("/purchase/updateTranCode : GET");
 		
@@ -178,12 +193,12 @@ public class PurchaseController {
 		Purchase purchaseVO = purchaseService.getPurchase(Integer.parseInt(tranNo));
 		purchaseService.updateTranCode(purchaseVO);
 		//model.addAttribute("purchaseVO", purchaseVO);
-
-		return "forward:/purchase/listPurchase";
+		
+		return new ModelAndView("forward:/purchase/listPurchase");
 	}
 	
 	@RequestMapping(value="updateTranCodeByProd", method=RequestMethod.GET)
-	public String updateTranCodeByProdAction( @RequestParam("prodNo") String prodNo) throws Exception{
+	public ModelAndView updateTranCodeByProdAction( @RequestParam("prodNo") String prodNo) throws Exception{
 
 		System.out.println("/purchase/updateTranCodeByProd");
 		
@@ -191,6 +206,6 @@ public class PurchaseController {
 		Purchase purchaseVO = purchaseService.getPurchase2(Integer.parseInt(prodNo));
 		purchaseService.updateTranCode(purchaseVO);
 		
-		return "forward:/product/listProduct?menu=manage";
+		return new ModelAndView("forward:/product/listProduct?menu=manage");
 	}
 }
